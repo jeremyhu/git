@@ -195,6 +195,8 @@
 /git.spec
 *.exe
 *.[aos]
+# Accommodate for case-insensitive filesystems where *.s would catch ppc/sha1ppc.S
+!*.S
 *.py[co]
 .depend/
 *.gcda
