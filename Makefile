@@ -1918,10 +1918,7 @@ version.sp version.s version.o: EXTRA_CPPFLAGS = \
 		git rev-parse -q --verify HEAD || :)"'
 
 $(BUILT_INS): git$X
-	$(QUIET_BUILT_IN)$(RM) $@ && \
-	ln $< $@ 2>/dev/null || \
-	ln -s $< $@ 2>/dev/null || \
-	cp $< $@
+	$(QUIET_BUILT_IN)ln -fs $< $@
 
 common-cmds.h: generate-cmdlist.sh command-list.txt
 
@@ -2205,7 +2202,6 @@ git-remote-testsvn$X: remote-testsvn.o GIT-LDFLAGS $(GITLIBS) $(VCSSVN_LIB)
 
 $(REMOTE_CURL_ALIASES): $(REMOTE_CURL_PRIMARY)
 	$(QUIET_LNCP)$(RM) $@ && \
-	ln $< $@ 2>/dev/null || \
 	ln -s $< $@ 2>/dev/null || \
 	cp $< $@
 
