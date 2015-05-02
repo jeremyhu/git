@@ -217,7 +217,7 @@
 *.deb
 /git.spec
 *.exe
-*.[aos]
+*.[ao]
 *.py[co]
 .depend/
 *.gcda
