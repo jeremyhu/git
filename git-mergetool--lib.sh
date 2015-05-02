@@ -239,9 +239,9 @@ list_merge_tool_candidates () {
 	then
 		if test -n "$GNOME_DESKTOP_SESSION_ID"
 		then
-			tools="meld opendiff kdiff3 tkdiff xxdiff $tools"
+			tools="meld kdiff3 tkdiff xxdiff $tools"
 		else
-			tools="opendiff kdiff3 tkdiff xxdiff meld $tools"
+			tools="kdiff3 tkdiff xxdiff meld $tools"
 		fi
 		tools="$tools gvimdiff diffuse diffmerge ecmerge"
 		tools="$tools p4merge araxis bc codecompare"
@@ -254,6 +254,8 @@ list_merge_tool_candidates () {
 		tools="$tools emerge vimdiff"
 		;;
 	esac
+
+	tools="opendiff $tools"
 }
 
 show_tool_help () {
