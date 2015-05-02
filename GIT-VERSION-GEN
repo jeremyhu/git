@@ -3,6 +3,10 @@
 GVF=GIT-VERSION-FILE
 DEF_VER=v2.6.4
 
+if [ -n "$RC_ProjectSourceVersion" ] ; then
+	DEF_VER="$DEF_VER (Apple Git-$RC_ProjectSourceVersion)"
+fi
+
 LF='
 '
 
