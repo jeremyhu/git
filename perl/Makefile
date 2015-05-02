@@ -79,8 +79,9 @@ $(makfile): ../GIT-CFLAGS Makefile
 	echo instlibdir: >> $@
 	echo '	echo $(instdir_SQ)' >> $@
 else
+
 $(makfile): Makefile.PL ../GIT-CFLAGS
-	$(PERL_PATH) $< PREFIX='$(prefix_SQ)' INSTALL_BASE='' --localedir='$(localedir_SQ)'
+	$(PERL_PATH) $< PREFIX='$(prefix_SQ)' INSTALLSITELIB='$(sharedir)/git-core/perl' INSTALL_BASE='' --localedir='$(localedir_SQ)'
 endif
 
 # this is just added comfort for calling make directly in perl dir
