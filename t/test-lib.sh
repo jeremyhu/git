@@ -850,6 +850,8 @@ fi
 
 GITPERLLIB="$GIT_BUILD_DIR"/perl/blib/lib:"$GIT_BUILD_DIR"/perl/blib/arch/auto/Git
 export GITPERLLIB
+PERL5LIB="$GIT_BUILD_DIR"/perl
+export PERL5LIB
 test -d "$GIT_BUILD_DIR"/templates/blt || {
 	error "You haven't built things yet, have you?"
 }
