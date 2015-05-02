@@ -1802,6 +1802,36 @@ sub complete_url_ls_init {
 
 sub verify_ref {
 	my ($ref) = @_;
+
+	if ($ref =~ /^(.*)\^0$/) {
+		my $baseref = $1;
+		my $p = "$ENV{GIT_DIR}/$baseref";
+		$p = "$ENV{GIT_DIR}/refs/remotes/$baseref" unless -e $p;
+		$p = "$ENV{GIT_DIR}/refs/$baseref" unless -e $p;
+		$p = "$ENV{GIT_DIR}/refs/heads/$baseref" unless -e $p;
+
+		my $resolved = undef;
+		if (-e $p) {
+			open FH, $p;
+			$resolved = <FH>;
+			chomp $resolved;
+			close FH;
+		} elsif (-e "$ENV{GIT_DIR}/packed-refs") {
+			open FH, "$ENV{GIT_DIR}/packed-refs";
+			while (<FH>) {
+				if ($_ =~ /^([0-9a-fA-F]+) ((refs\/)?(remotes\/|heads\/|\/)?$baseref)$/) {
+					$resolved = $1;
+					last;
+				}
+			}
+		}
+
+		if (defined($resolved)) {
+			return verify_ref("$1^0") if $resolved =~ /^ref: (.*)$/;
+			return $resolved
+		}
+	}
+
 	eval { command_oneline([ 'rev-parse', '--verify', $ref ],
 	                       { STDERR => 0 }); };
 }
