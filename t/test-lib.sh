@@ -959,6 +959,8 @@ fi
 
 GITPERLLIB="$GIT_BUILD_DIR"/perl/build/lib
 export GITPERLLIB
+PERL5LIB="$GIT_BUILD_DIR"/perl
+export PERL5LIB
 test -d "$GIT_BUILD_DIR"/templates/blt || {
 	error "You haven't built things yet, have you?"
 }
