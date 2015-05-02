@@ -1748,13 +1748,56 @@ PERL_DEFINES = $(PERL_PATH_SQ):$(PERLLIB_EXTRA_SQ)
 $(SCRIPT_PERL_GEN): % : %.perl perl/perl.mak GIT-PERL-DEFINES GIT-VERSION-FILE
 	$(QUIET_GEN)$(RM) $@ $@+ && \
 	INSTLIBDIR=`MAKEFLAGS= $(MAKE) -C perl -s --no-print-directory instlibdir` && \
+	PERLVERSION=$(shell grep DEFAULT /usr/local/versioner/perl/versions | sed 's:^.*= *\([^ ]*\)$$:\1:') && \
 	INSTLIBDIR_EXTRA='$(PERLLIB_EXTRA_SQ)' && \
 	INSTLIBDIR="$$INSTLIBDIR$${INSTLIBDIR_EXTRA:+:$$INSTLIBDIR_EXTRA}" && \
 	sed -e '1{' \
 	    -e '	s|#!.*perl|#!$(PERL_PATH_SQ)|' \
 	    -e '	h' \
-	    -e '	s=.*=use lib (split(/$(pathsep)/, $$ENV{GITPERLLIB} || "'"$$INSTLIBDIR"'"));=' \
-	    -e '	H' \
+	    -e '        s,.*,BEGIN {,' \
+	    -e '        H' \
+	    -e '        s,.*,    use File::Spec;,' \
+	    -e '        H' \
+	    -e '        s,.*,    my $$PERLVERSION = "'$$PERLVERSION'";,' \
+	    -e '        H' \
+	    -e '        s,.*,    if ($$^V =~ m/v([0-9]+)\.([0-9]+)/) {,' \
+	    -e '        H' \
+	    -e '        s,.*,        $$PERLVERSION = $$1.".".$$2;,' \
+	    -e '        H' \
+	    -e '        s,.*,    },' \
+	    -e '        H' \
+	    -e '        s,.*,    my $$__prefix = File::Spec->rel2abs( __FILE__ );,' \
+	    -e '        H' \
+	    -e '        s,.*,,' \
+	    -e '        H' \
+	    -e '        s,.*,    if ($$__prefix =~ m/\\/libexec\\/git-core\\// ) {,' \
+	    -e '        H' \
+	    -e '        s,.*,        $$__prefix =~ s/\\/libexec\\/git-core\\/.*//;,' \
+	    -e '        H' \
+	    -e '        s,.*,        unshift @INC\, $$__prefix . "/share/git-core/perl";,' \
+	    -e '        H' \
+	    -e '        s,.*,        unshift @INC\, $$__prefix . "/../Library/Perl/".$$PERLVERSION."/darwin-thread-multi-2level";,' \
+	    -e '        H' \
+	    -e '        s,.*,    } elsif ($$__prefix =~ m/\\/bin\\// ) {,' \
+	    -e '        H' \
+	    -e '        s,.*,        $$__prefix =~ s/\\/bin\\/.*//;,' \
+	    -e '        H' \
+	    -e '        s,.*,        unshift @INC\, $$__prefix . "/share/git-core/perl";,' \
+	    -e '        H' \
+	    -e '        s,.*,        unshift @INC\, $$__prefix . "/../Library/Perl/".$$PERLVERSION."/darwin-thread-multi-2level";,' \
+	    -e '        H' \
+	    -e '        s,.*,    } elsif ( $$__prefix =~ m/\\/usr\\// ) {,' \
+	    -e '        H' \
+	    -e '        s,.*,        $$__prefix =~ s/\\/usr\\/.*/\\/usr/;,' \
+	    -e '        H' \
+	    -e '        s,.*,        unshift @INC\, $$__prefix . "/share/git-core/perl";,' \
+	    -e '        H' \
+	    -e '        s,.*,        unshift @INC\, $$__prefix . "/../Library/Perl/".$$PERLVERSION."/darwin-thread-multi-2level";,' \
+	    -e '        H' \
+	    -e '        s,.*,    },' \
+	    -e '        H' \
+	    -e '        s,.*,},' \
+	    -e '        H' \
 	    -e '	x' \
 	    -e '}' \
 	    -e 's/@@GIT_VERSION@@/$(GIT_VERSION)/g' \
@@ -1796,6 +1839,8 @@ $(SCRIPT_PYTHON_GEN): GIT-CFLAGS GIT-PREFIX GIT-PYTHON-VARS
 $(SCRIPT_PYTHON_GEN): % : %.py
 	$(QUIET_GEN)$(RM) $@ $@+ && \
 	sed -e '1s|#!.*python|#!$(PYTHON_PATH_SQ)|' \
+	    -e 's|\(os\.getenv("GITPYTHONLIB"\)[^)]*)|\1,"@@INSTLIBDIR@@")|' \
+	    -e 's|"@@INSTLIBDIR@@"|os.path.realpath(os.path.dirname(sys.argv[0])) + "/../../share/git-core/python"|g' \
 	    $< >$@+ && \
 	chmod +x $@+ && \
 	mv $@+ $@

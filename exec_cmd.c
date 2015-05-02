@@ -3,6 +3,14 @@
 #include "quote.h"
 #define MAX_ARGS	32
 
+#ifdef RUNTIME_PREFIX
+#include <unistd.h>
+#endif
+
+#if defined(__APPLE__) && defined(RUNTIME_PREFIX)
+#include <mach-o/dyld.h>
+#endif
+
 static const char *argv_exec_path;
 static const char *argv0_path;
 
@@ -49,8 +57,50 @@ const char *git_extract_argv0_path(const char *argv0)
 		slash--;
 
 	if (slash >= argv0) {
+#ifdef RUNTIME_PREFIX
+		if (!is_dir_sep(*argv0)) {
+			char *path_buf, *s;
+			size_t path_buf_size;
+
+			path_buf = getcwd(NULL, 0);
+			if (!path_buf)
+				die("Unable to determine current working directory");
+
+			path_buf_size = strlen(path_buf) + strlen(argv0) + 2;
+
+			/* xrealloc dies on failure */
+			path_buf = xrealloc(path_buf, path_buf_size);
+			strlcat(path_buf, "/", path_buf_size);
+			strlcat(path_buf, argv0, path_buf_size);
+
+			/* Find the last slash in our new buffer */
+			s = path_buf + path_buf_size - 1;
+			while (path_buf <= s && !is_dir_sep(*s))
+				s--;
+
+			assert(s >= path_buf);
+
+			*s = '\0';
+			argv0_path = path_buf;
+
+			return s + 1;
+		}
+#endif
 		argv0_path = xstrndup(argv0, slash - argv0);
 		return slash + 1;
+#ifdef __APPLE__
+	} else {
+		char new_argv0[PATH_MAX];
+		uint32_t new_argv0_s = PATH_MAX;
+		if(_NSGetExecutablePath(new_argv0, &new_argv0_s) == 0) {
+			slash = new_argv0 + strlen(new_argv0);
+			while (new_argv0 <= slash && !is_dir_sep(*slash))
+				slash--;
+
+			if (slash >= new_argv0)
+				argv0_path = xstrndup(new_argv0, slash - new_argv0);
+		}
+#endif
 	}
 
 	return argv0;
