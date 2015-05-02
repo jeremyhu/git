@@ -959,6 +959,9 @@ fi
 
 GITPERLLIB="$GIT_BUILD_DIR"/perl/build/lib
 export GITPERLLIB
+PERL_VERSION=$(grep DEFAULT /usr/local/versioner/perl/versions | sed 's:^.*= *\([^ ]*\)$:\1:')
+PERL5LIB="$GIT_BUILD_DIR"/perl:"$(xcode-select -p)"/Library/Perl/$PERL_VERSION
+export PERL5LIB
 test -d "$GIT_BUILD_DIR"/templates/blt || {
 	error "You haven't built things yet, have you?"
 }
