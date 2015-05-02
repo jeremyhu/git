@@ -1,3 +1,28 @@
+# BEGIN XCODE RUNTIME_PREFIX generated code
+BEGIN {
+    use File::Spec;
+    my $PERLVERSION = "@@PERLVERSION@@";
+    if ($^V =~ m/v([0-9]+).([0-9]+)/) {
+        $PERLVERSION = $1.".".$2;
+    }
+    my $__prefix = File::Spec->rel2abs( __FILE__ );
+
+    if ($__prefix =~ m/\/libexec\/git-core\// ) {
+        $__prefix =~ s/\/libexec\/git-core\/.*//;
+        unshift @INC, $__prefix . "/share/git-core/perl";
+        unshift @INC, $__prefix . "/../Library/Perl/".$PERLVERSION."/darwin-thread-multi-2level";
+    } elsif ($__prefix =~ m/\/bin\// ) {
+        $__prefix =~ s/\/bin\/.*//;
+        unshift @INC, $__prefix . "/share/git-core/perl";
+        unshift @INC, $__prefix . "/../Library/Perl/".$PERLVERSION."/darwin-thread-multi-2level";
+    } elsif ( $__prefix =~ m/\/usr\// ) {
+        $__prefix =~ s/\/usr\/.*/\/usr/;
+        unshift @INC, $__prefix . "/share/git-core/perl";
+        unshift @INC, $__prefix . "/../Library/Perl/".$PERLVERSION."/darwin-thread-multi-2level";
+    }
+}
+# END XCODE RUNTIME_PREFIX generated code.
+
 # BEGIN RUNTIME_PREFIX generated code.
 #
 # This finds our Git::* libraries relative to the script's runtime path.
