@@ -120,6 +120,7 @@ int git_config_rename_section_in_file(const char *, const char *, const char *);
 int git_config_copy_section(const char *, const char *);
 int git_config_copy_section_in_file(const char *, const char *, const char *);
 const char *git_etc_gitconfig(void);
+const char *git_xcode_gitconfig(void);
 int git_env_bool(const char *, int);
 unsigned long git_env_ulong(const char *, unsigned long);
 int git_config_system(void);
@@ -136,6 +137,7 @@ enum config_scope {
 	CONFIG_SCOPE_GLOBAL,
 	CONFIG_SCOPE_REPO,
 	CONFIG_SCOPE_CMDLINE,
+	CONFIG_SCOPE_XCODE,
 };
 
 enum config_scope current_config_scope(void);
