@@ -28,6 +28,25 @@ char *system_path(const char *path)
 		return xstrdup(path);
 
 #ifdef RUNTIME_PREFIX
+#ifdef __APPLE__
+	/* I found out we can get into this state during tests because of our
+	 * system_path() call to find the Xcode-bundled xcconfig because the
+	 * tests (eg: test-scrap-cache-tree) don't call git_extract_argv0_path.
+	 */
+	if (!argv0_path) {
+		char new_argv0[PATH_MAX];
+		uint32_t new_argv0_s = PATH_MAX;
+		if(_NSGetExecutablePath(new_argv0, &new_argv0_s) == 0) {
+			const char *slash = new_argv0 + strlen(new_argv0);
+			while (new_argv0 <= slash && !is_dir_sep(*slash))
+				slash--;
+
+			if (slash >= new_argv0)
+				argv0_path = xstrndup(new_argv0, slash - new_argv0);
+		}
+	}
+#endif
+
 	assert(argv0_path);
 	assert(is_absolute_path(argv0_path));
 
