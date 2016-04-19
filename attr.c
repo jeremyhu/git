@@ -822,6 +822,14 @@ static const char *git_etc_gitattributes(void)
 	return system_wide;
 }
 
+static const char *git_xcode_gitattributes(void)
+{
+	static const char *xcode_gitattributes;
+	if (!xcode_gitattributes)
+		xcode_gitattributes = system_path("share/git-core/gitattributes");
+	return xcode_gitattributes;
+}
+
 static const char *get_home_gitattributes(void)
 {
 	if (!git_attributes_file)
@@ -863,6 +871,9 @@ static void bootstrap_attr_stack(const struct index_state *istate,
 
 	/* system-wide frame */
 	if (git_attr_system()) {
+		e = read_attr_from_file(git_xcode_gitattributes(), 1);
+		push_stack(stack, e, NULL, 0);
+
 		e = read_attr_from_file(git_etc_gitattributes(), 1);
 		push_stack(stack, e, NULL, 0);
 	}
