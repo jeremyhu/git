@@ -483,6 +483,14 @@ static const char *git_etc_gitattributes(void)
 	return system_wide;
 }
 
+static const char *git_xcode_gitattributes(void)
+{
+	static const char *xcode_gitattributes;
+	if (!xcode_gitattributes)
+		xcode_gitattributes = system_path("share/git-core/gitattributes");
+	return xcode_gitattributes;
+}
+
 static int git_attr_system(void)
 {
 	return !git_env_bool("GIT_ATTR_NOSYSTEM", 0);
@@ -503,6 +511,12 @@ static void bootstrap_attr_stack(void)
 	attr_stack = elem;
 
 	if (git_attr_system()) {
+		elem = read_attr_from_file(git_xcode_gitattributes(), 1);
+		if (elem) {
+			elem->origin = NULL;
+			elem->prev = attr_stack;
+			attr_stack = elem;
+		}
 		elem = read_attr_from_file(git_etc_gitattributes(), 1);
 		if (elem) {
 			elem->origin = NULL;
