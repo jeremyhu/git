@@ -1257,6 +1257,14 @@ const char *git_etc_gitconfig(void)
 	return system_wide;
 }
 
+const char *git_xcode_gitconfig(void)
+{
+	static const char *xcode_config;
+	if (!xcode_config)
+		xcode_config = system_path("share/git-core/gitconfig");
+	return xcode_config;
+}
+
 /*
  * Parse environment variable 'k' as a boolean (in various
  * possible spellings); if missing, use the default value 'def'.
@@ -1290,6 +1298,11 @@ static int do_git_config_sequence(config_fn_t fn, void *data)
 	char *xdg_config = xdg_config_home("config");
 	char *user_config = expand_user_path("~/.gitconfig");
 	char *repo_config = git_pathdup("config");
+
+	current_parsing_scope = CONFIG_SCOPE_XCODE;
+	if (git_config_system() && git_xcode_gitconfig() && !access_or_die(git_xcode_gitconfig(), R_OK, 0))
+		ret += git_config_from_file(fn, git_xcode_gitconfig(),
+					    data);
 
 	current_parsing_scope = CONFIG_SCOPE_SYSTEM;
 	if (git_config_system() && !access_or_die(git_etc_gitconfig(), R_OK, 0))
