@@ -360,11 +360,11 @@ test_expect_success 'git add --chmod=[+-]x changes index with already added file
 	git add foo3 &&
 	git add --chmod=+x foo3 &&
 	test_mode_in_index 100755 foo3 &&
-	echo foo >xfoo3 &&
-	chmod 755 xfoo3 &&
-	git add xfoo3 &&
-	git add --chmod=-x xfoo3 &&
-	test_mode_in_index 100644 xfoo3
+	echo foo >xfoo4 &&
+	chmod 755 xfoo4 &&
+	git add xfoo4 &&
+	git add --chmod=-x xfoo4 &&
+	test_mode_in_index 100644 xfoo4
 '
 
 test_expect_success POSIXPERM 'git add --chmod=[+-]x does not change the working tree' '
