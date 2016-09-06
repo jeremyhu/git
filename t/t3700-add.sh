@@ -341,7 +341,7 @@ test_expect_success 'git add --chmod=+x stages a non-executable file with +x' '
 	esac
 '
 
-test_expect_success 'git add --chmod=-x stages an executable file with -x' '
+test_expect_failure 'git add --chmod=-x stages an executable file with -x' '
 	echo foo >xfoo1 &&
 	chmod 755 xfoo1 &&
 	git add --chmod=-x xfoo1 &&
