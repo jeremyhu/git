@@ -754,7 +754,7 @@ test_expect_success 'format-patch --ignore-if-in-upstream HEAD' '
 	git format-patch --ignore-if-in-upstream HEAD
 '
 
-git_version="$(git --version | sed "s/.* //")"
+git_version="$(git --version | sed "s/git version //")"
 
 signature() {
 	printf "%s\n%s\n\n" "-- " "${1:-$git_version}"
