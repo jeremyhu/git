@@ -261,6 +261,7 @@ static int run_dir_diff(const char *extcmd, int symlinks, const char *prefix,
 	struct strbuf info = STRBUF_INIT, lpath = STRBUF_INIT;
 	struct strbuf rpath = STRBUF_INIT, buf = STRBUF_INIT;
 	struct strbuf ldir = STRBUF_INIT, rdir = STRBUF_INIT;
+	struct strbuf lbase_dir = STRBUF_INIT, rbase_dir = STRBUF_INIT;
 	struct strbuf wtdir = STRBUF_INIT;
 	size_t ldir_len, rdir_len, wtdir_len;
 	struct cache_entry *ce = xcalloc(1, sizeof(ce) + PATH_MAX + 1);
@@ -298,12 +299,16 @@ static int run_dir_diff(const char *extcmd, int symlinks, const char *prefix,
 	memset(&wtindex, 0, sizeof(wtindex));
 
 	memset(&lstate, 0, sizeof(lstate));
-	lstate.base_dir = ldir.buf;
-	lstate.base_dir_len = ldir.len;
+	strbuf_addbuf(&lbase_dir, &ldir);
+	size_t lbase_dir_len = 0;
+	lstate.base_dir = strbuf_detach(&lbase_dir, &lbase_dir_len);
+	lstate.base_dir_len = lbase_dir_len;
 	lstate.force = 1;
 	memset(&rstate, 0, sizeof(rstate));
-	rstate.base_dir = rdir.buf;
-	rstate.base_dir_len = rdir.len;
+	strbuf_addbuf(&rbase_dir, &rdir);
+	size_t rbase_dir_len = 0;
+	rstate.base_dir = strbuf_detach(&rbase_dir, &rbase_dir_len);
+	rstate.base_dir_len = rbase_dir_len;
 	rstate.force = 1;
 
 	ldir_len = ldir.len;
