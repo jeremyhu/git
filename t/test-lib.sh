@@ -1108,13 +1108,7 @@ test_lazy_prereq UTF8_NFD_TO_NFC '
 	# check whether FS converts nfd unicode to nfc
 	auml=$(printf "\303\244")
 	aumlcdiar=$(printf "\141\314\210")
-	>"$auml" &&
-	case "$(echo *)" in
-	"$aumlcdiar")
-		true ;;
-	*)
-		false ;;
-	esac
+	>"$auml" && test -f "$aumlcdiar"
 '
 
 test_lazy_prereq AUTOIDENT '
