@@ -7,7 +7,7 @@ test_description='test git-serve and server commands'
 test_expect_success 'test capability advertisement' '
 	cat >expect <<-EOF &&
 	version 2
-	agent=git/$(git version | cut -d" " -f3)
+	agent=git/$(git --version | sed -e "s/git version //" -e "s/ /\./g")
 	ls-refs
 	fetch=shallow
 	server-option
