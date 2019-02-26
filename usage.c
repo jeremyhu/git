@@ -6,6 +6,11 @@
 #include "git-compat-util.h"
 #include "cache.h"
 
+#ifdef __APPLE__
+#define OS_CRASH_ENABLE_EXPERIMENTAL_LIBTRACE 1
+#include <os/assumes.h>
+#endif
+
 void vreportf(const char *prefix, const char *err, va_list params)
 {
 	char msg[4096];
@@ -258,6 +263,21 @@ static NORETURN void BUG_vfl(const char *file, int line, const char *fmt, va_lis
 	vreportf(prefix, fmt, params);
 	if (BUG_exit_code)
 		exit(BUG_exit_code);
+#ifdef __APPLE__
+	char const *message = NULL;
+	char *msg = NULL;
+	vasprintf(&msg, fmt, params);
+	if (msg) {
+		for (char *p = msg; *p; p++) {
+			if (iscntrl(*p) && *p != '\t' && *p != '\n')
+				*p = '?';
+		}
+		message = msg;
+	} else {
+		message = fmt;;
+	}
+	os_crash("%s%s", prefix, msg);
+#endif
 	abort();
 }
 
